@@ -1,9 +1,16 @@
 package clases.ito.poo;
 
+import excepciones.poo.ito.ExcepcioCuentaExistente;
+import excepciones.poo.ito.ExcepcionBorraCuenta;
+import excepciones.poo.ito.ExcepcionDeposito;
+import excepciones.poo.ito.ExcepcionRetiro;
 import interfaces.ito.poo.Arreglo;
+import clases.ito.poo.CuentaBancaria;
+
+
 public class CuentasBancareas implements Arreglo<CuentaBancaria> {
 
-	
+	static CuentaBancaria e;
 
 	private CuentaBancaria cuentas[]=null;
 	private int ultimo=0;
@@ -14,6 +21,28 @@ public class CuentasBancareas implements Arreglo<CuentaBancaria> {
 		this.cuentas=new CuentaBancaria[INC];
 		this.ultimo=-1; // Indica que esta vacio el arreglo
 	}
+	
+	public void exceptionDeposito(float deposito) throws ExcepcionDeposito{
+		if (deposito<500F||deposito>25000F)
+			throw new ExcepcionDeposito("No se puede depositar menos de 500$ o más de 25,000$");
+	}
+	public void exceptionRetiro(float retiro) throws ExcepcionRetiro{
+		if (!((retiro%100)==0) || retiro<100 || retiro>6000)
+			throw new ExcepcionRetiro("No se puede retirar más de 6000$ ni menos de 100$, y el retio debe ser divisible entre 100");
+	}
+	
+	public void exepcionCuentaExistente(CuentaBancaria item) throws ExcepcioCuentaExistente{
+		if(this.existeItem(item)) {
+			throw new ExcepcioCuentaExistente("La cuenta ya existe");
+		}
+	}
+	
+	public void exepcionBorraCuenta(CuentaBancaria item) throws ExcepcionBorraCuenta{
+		if(item.getSaldo()==0) {
+			throw new ExcepcionBorraCuenta("Una cuenta con saldo distinto a 0 no se puede eliminar");
+		}
+	}
+	
 	
 	
 	public void crecerArreglo() {
@@ -26,7 +55,6 @@ public class CuentasBancareas implements Arreglo<CuentaBancaria> {
 	@Override
 	public boolean addItem(CuentaBancaria item) {
 		boolean add=false;
-		if(!this.existeItem(item)) {
 		if(this.isFull()) 
 			crecerArreglo();
 		int j=0;
@@ -40,7 +68,7 @@ public class CuentasBancareas implements Arreglo<CuentaBancaria> {
 				this.cuentas[j]=item;
 				this.ultimo++;
 				add=true;
-			}
+			
 		return add;
 	}
 
@@ -55,6 +83,8 @@ public class CuentasBancareas implements Arreglo<CuentaBancaria> {
 					
 		return existe;
 	}
+	
+	
 
 	@Override
 	public CuentaBancaria getItem(int pos) {

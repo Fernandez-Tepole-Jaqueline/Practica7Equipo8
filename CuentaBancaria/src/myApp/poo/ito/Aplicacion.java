@@ -1,16 +1,31 @@
 package myApp.poo.ito;
+import java.awt.HeadlessException;
 import java.time.LocalDate;
 import clases.ito.poo.CuentaBancaria;
 import clases.ito.poo.CuentasBancareas;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
+import excepciones.poo.ito.ExcepcionNoCuenta;
+import excepciones.poo.ito.ExcepcionSaldo;
+import excepciones.poo.ito.ExcepcionDeposito;
+import excepciones.poo.ito.ExcepcionRetiro;
+import excepciones.poo.ito.ExcepcioCuentaExistente;
+import excepciones.poo.ito.ExcepcionBorraCuenta;
 
 
 public class Aplicacion {
 
 	static CuentasBancareas c;
+	static CuentaBancaria e;
 	
-	static void menu() {
+	
+	static void menu() throws ExcepcionNoCuenta, ExcepcionSaldo, ExcepcionRetiro, ExcepcionDeposito, HeadlessException, ExcepcioCuentaExistente, ExcepcionBorraCuenta {
 		inicializa();
+		final JPanel panel=new JPanel();
+		boolean error=true;
+		while(error) {
+		try {
 		boolean ciclo=true;
 		int respuesta=0;
 		while(ciclo) {
@@ -24,13 +39,27 @@ public class Aplicacion {
 		case 4:hacerRetiro();break;
 		case 5:borrarCuenta();break;
 		case 6:consulta();break;
-		case 7:ciclo=false;break;
+		case 7:ciclo=false;error=false;break;
 		default:JOptionPane.showMessageDialog(null,"Ingrese una de las opciones indicadas por favor");
 		  }
 		}
+		}catch(ExcepcionNoCuenta e){
+			JOptionPane.showMessageDialog(panel,e.getMessage(),"ERROR", JOptionPane.ERROR_MESSAGE);
+		}catch(ExcepcionSaldo e) {
+			JOptionPane.showMessageDialog(panel,e.getMessage(),"ERROR", JOptionPane.ERROR_MESSAGE);
+		}catch(ExcepcionDeposito e) {
+			JOptionPane.showMessageDialog(panel,e.getMessage(),"ERROR", JOptionPane.ERROR_MESSAGE);
+		}catch(ExcepcionRetiro e) {
+			JOptionPane.showMessageDialog(panel,e.getMessage(),"ERROR", JOptionPane.ERROR_MESSAGE);
+		}catch(ExcepcioCuentaExistente e) {
+			JOptionPane.showMessageDialog(panel,e.getMessage(),"ERROR", JOptionPane.ERROR_MESSAGE);
+		}catch(ExcepcionBorraCuenta e) {
+			JOptionPane.showMessageDialog(panel,e.getMessage(),"ERROR", JOptionPane.ERROR_MESSAGE);
+		}
+		}
 	}
 	
-	static CuentaBancaria capturarCuenta() {
+	static CuentaBancaria capturarCuenta() throws ExcepcionNoCuenta,ExcepcionSaldo {
 		CuentaBancaria n=new CuentaBancaria();
 		long l;String fecha,nombre;float saldo;
 		l=Long.parseLong(JOptionPane.showInputDialog("Proporciona un número de cuenta:"));
@@ -48,7 +77,7 @@ public class Aplicacion {
 		c=new CuentasBancareas();
 	}
 	
-	static void agregarCuenta() {
+	static void agregarCuenta() throws ExcepcionNoCuenta, ExcepcionSaldo, HeadlessException, ExcepcioCuentaExistente {
 		CuentaBancaria nueva;
 		nueva=capturarCuenta();
 		if(c.addItem(nueva)) {
@@ -56,7 +85,6 @@ public class Aplicacion {
 			if(c.isFull())
 				c.crecerArreglo();
 		}
-			
 		else
 			JOptionPane.showMessageDialog(null,"Error:La cuenta ya existe!!");
 	}
@@ -72,7 +100,7 @@ public class Aplicacion {
 		}
 	}
 	
-	static void hacerDeposito() {
+	static void hacerDeposito() throws ExcepcionSaldo, ExcepcionDeposito {
 		int pos=0;
 		float cantidad=0;
 		if(c.isFree())
@@ -86,7 +114,8 @@ public class Aplicacion {
 		    pos=Integer.parseInt(JOptionPane.showInputDialog("A que cuenta deseas hacer un deposito?\n"+cuentas));
 		    if((c.getSize())>=pos&&pos>0) {
 		    cantidad=Float.parseFloat(JOptionPane.showInputDialog("Que cantidad desea depositar?"));
-		    c.getItem(pos-1).setSaldo(c.getItem(pos-1).getSaldo()+cantidad);
+		    c.exceptionDeposito(cantidad);
+		    c.getItem(pos-1).setSaldoActualizado(c.getItem(pos-1).getSaldo()+cantidad);
 		    c.getItem(pos-1).setFechaActualizacion(LocalDate.now());
 		    JOptionPane.showMessageDialog(null,"Dinero depositado exitosamente!!");
 		    bandera=false;
@@ -97,7 +126,7 @@ public class Aplicacion {
 		}
 	}
 	
-	static void hacerRetiro() {
+	static void hacerRetiro() throws ExcepcionSaldo, ExcepcionRetiro {
 		int pos=0;
 		float cantidad=0;
 		if(c.isFree())
@@ -111,8 +140,9 @@ public class Aplicacion {
 		    pos=Integer.parseInt(JOptionPane.showInputDialog("A que cuenta deseas hacer un retiro?\n"+cuentas));
 		    if((c.getSize())>=pos&&pos>0) {
 		    cantidad=Float.parseFloat(JOptionPane.showInputDialog("Que cantidad desea retirar?"));
+		    c.exceptionRetiro(cantidad);
 		    if(!(c.getItem(pos-1).getSaldo()<cantidad)) {
-		    c.getItem(pos-1).setSaldo(c.getItem(pos-1).getSaldo()-cantidad);
+		    c.getItem(pos-1).setSaldoActualizado(c.getItem(pos-1).getSaldo()-cantidad);
 		    c.getItem(pos-1).setFechaActualizacion(LocalDate.now());
 		    JOptionPane.showMessageDialog(null,"Dinero retirado exitosamente!!");
 		    bandera=false;
@@ -127,7 +157,7 @@ public class Aplicacion {
 		}
 	}
 	
-	static void borrarCuenta() {
+	static void borrarCuenta() throws ExcepcionBorraCuenta {
 		int pos=0;
 		if(c.isFree())
 			JOptionPane.showMessageDialog(null,"Todavía no hay ninguna cuenta");
@@ -139,6 +169,7 @@ public class Aplicacion {
 			    cuentas=cuentas+"\n"+(i+1)+")"+(c.getItem(i));
 		    pos=Integer.parseInt(JOptionPane.showInputDialog("Cual cuenta deseas dar de baja?\n"+cuentas));
 		    if((c.getSize())>=pos&&pos>0) {
+		    	c.exepcionBorraCuenta(c.getItem(pos-1));
 		    	c.clear(c.getItem(pos-1));
 		    	JOptionPane.showMessageDialog(null,"Cuenta dada de baja con éxito!!");
 		    	bandera=false;
