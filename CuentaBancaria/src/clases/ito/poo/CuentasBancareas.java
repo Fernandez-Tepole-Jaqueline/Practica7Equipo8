@@ -38,7 +38,7 @@ public class CuentasBancareas implements Arreglo<CuentaBancaria> {
 	}
 	
 	public void exepcionBorraCuenta(CuentaBancaria item) throws ExcepcionBorraCuenta{
-		if(item.getSaldo()==0) {
+		if(item.getSaldo()>0) {
 			throw new ExcepcionBorraCuenta("Una cuenta con saldo distinto a 0 no se puede eliminar");
 		}
 	}
@@ -53,8 +53,9 @@ public class CuentasBancareas implements Arreglo<CuentaBancaria> {
 	}
 	
 	@Override
-	public boolean addItem(CuentaBancaria item) {
+	public boolean addItem(CuentaBancaria item) throws ExcepcioCuentaExistente {
 		boolean add=false;
+		this.exepcionCuentaExistente(item);
 		if(this.isFull()) 
 			crecerArreglo();
 		int j=0;

@@ -80,13 +80,13 @@ public class Aplicacion {
 	static void agregarCuenta() throws ExcepcionNoCuenta, ExcepcionSaldo, HeadlessException, ExcepcioCuentaExistente {
 		CuentaBancaria nueva;
 		nueva=capturarCuenta();
-		if(c.addItem(nueva)) {
-			JOptionPane.showMessageDialog(null,"Se ah agregado la cuenta con exito!!");
+		c.exepcionCuentaExistente(nueva);
+		c.addItem(nueva);
+	    JOptionPane.showMessageDialog(null,"Se ah agregado la cuenta con exito!!");
 			if(c.isFull())
 				c.crecerArreglo();
-		}
-		else
-			JOptionPane.showMessageDialog(null,"Error:La cuenta ya existe!!");
+		
+		
 	}
 	
 	static void mostrarCuentas() {
