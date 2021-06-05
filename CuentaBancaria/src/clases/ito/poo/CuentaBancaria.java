@@ -1,11 +1,13 @@
 package clases.ito.poo;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import excepciones.poo.ito.ExcepcionNoCuenta;
 import excepciones.poo.ito.ExcepcionSaldo;
 
-public class CuentaBancaria implements Comparable<CuentaBancaria> {
+@SuppressWarnings("serial")
+public class CuentaBancaria implements Comparable<CuentaBancaria>, Serializable {
 	
 	static CuentasBancareas c;
 	

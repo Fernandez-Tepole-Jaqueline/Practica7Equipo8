@@ -5,12 +5,17 @@ import excepciones.poo.ito.ExcepcionBorraCuenta;
 import excepciones.poo.ito.ExcepcionDeposito;
 import excepciones.poo.ito.ExcepcionRetiro;
 import interfaces.ito.poo.Arreglo;
+
+import java.io.FileNotFoundException;
+
 import clases.ito.poo.CuentaBancaria;
+import escritores.poo.ito.LectorArchivoTXT;
 
 
 public class CuentasBancareas implements Arreglo<CuentaBancaria> {
 
 	static CuentaBancaria e;
+	
 
 	private CuentaBancaria cuentas[]=null;
 	private int ultimo=0;
@@ -55,7 +60,7 @@ public class CuentasBancareas implements Arreglo<CuentaBancaria> {
 	@Override
 	public boolean addItem(CuentaBancaria item) throws ExcepcioCuentaExistente {
 		boolean add=false;
-		this.exepcionCuentaExistente(item);
+		
 		if(this.isFull()) 
 			crecerArreglo();
 		int j=0;
@@ -127,6 +132,7 @@ public class CuentasBancareas implements Arreglo<CuentaBancaria> {
 		return this.ultimo+1==this.cuentas.length;
 	}
 	
+
 	
 
 }
